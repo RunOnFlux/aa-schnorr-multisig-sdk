@@ -2,21 +2,10 @@ import { Hex, UserOperationCallData, deepHexlify, getUserOperationHash } from "@
 import { AccountSigner } from "@alchemy/aa-ethers"
 import { MultiSigAccountAbstraction } from "./MultiSigAccountAbstraction"
 import { SchnorrMultiSigTx } from "../transaction"
-import { UserOperationTxData } from "./types"
+import { GasEstimatorLimits, UserOperationTxData } from "./types"
 
 export function createMultiSigAccountSigner(accountSigner: AccountSigner<MultiSigAccountAbstraction>): MultiSigAccountSigner {
   return new MultiSigAccountSigner(accountSigner)
-}
-
-export interface GasEstimatorLimits {
-  verificationGasLimit?: number
-  callGasLimit?: number
-  preVerificationGas?: number
-}
-
-export interface GasEstimatorMax {
-  maxFeePerGas?: number
-  maxPriorityFeePerGas?: number
 }
 
 export class MultiSigAccountSigner extends AccountSigner<MultiSigAccountAbstraction> {

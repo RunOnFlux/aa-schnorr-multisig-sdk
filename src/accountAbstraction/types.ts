@@ -186,3 +186,16 @@ export interface UserOperationTxData {
   /* hash of the User Uperation */
   opHash: Hex
 }
+
+/* Used for building User Uperation with gas estimator: limits for gas usage */
+export interface GasEstimatorLimits {
+  callGasLimit?: number
+  preVerificationGas?: number
+  verificationGasLimit?: number
+}
+
+/* Used for building User Uperation with gas estimator: max fee per gas */
+export interface GasEstimatorMax {
+  maxFeePerGas?: number
+  maxPriorityFeePerGas?: number
+}

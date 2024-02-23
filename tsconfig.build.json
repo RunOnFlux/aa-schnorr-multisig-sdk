@@ -11,7 +11,8 @@
     "noUnusedLocals": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
   },
-  "exclude": ["examples", "dist", "tests", "jest.config.ts"]
+  "exclude": ["dist", "test", "jest.config.ts"]
 }

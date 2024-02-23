@@ -12,7 +12,8 @@
     "noUnusedLocals": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
   },
-  "exclude": ["examples", "dist", "node_modules"]
+  "exclude": ["dist", "node_modules"]
 }

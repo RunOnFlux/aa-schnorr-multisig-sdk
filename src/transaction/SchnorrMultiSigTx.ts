@@ -57,7 +57,7 @@ export class SchnorrMultiSigTx {
     return _signatureOutput
   }
 
-  getSummedSigData() {
+  getSummedSigData(): string {
     if (!this.combinedPubKey || !this.signatures || this.signers.length < 2) return
     const _signatureOutputs = this._getSignatures()
     const _sigs: SchnorrSignature[] = _signatureOutputs.map((sig) => sig.signature)

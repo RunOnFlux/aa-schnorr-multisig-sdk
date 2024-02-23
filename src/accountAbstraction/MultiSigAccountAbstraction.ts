@@ -1,6 +1,6 @@
 import type { Address } from "abitype"
 import { BaseSmartContractAccount, BatchUserOperationCallData, SmartAccountSigner } from "@alchemy/aa-core"
-import { MultiSigSmartAccountFactory_abi, MultiSigSmartAccount_abi } from "@runonflux/account-abstraction"
+import { MultiSigSmartAccountFactory_abi, MultiSigSmartAccount_abi } from "./abi"
 import { BytesLike, utils } from "ethers"
 import { concatHex, encodeFunctionData, hexToBytes, type Hex, FallbackTransport, Transport } from "viem"
 import { MultiSigAccountAbstractionParams, MultiSigSmartAccountParamsSchema } from "./schema"

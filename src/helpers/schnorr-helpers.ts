@@ -11,13 +11,13 @@ export function sumSchnorrSigs(signatures: SchnorrSignature[]): SchnorrSignature
   return Schnorrkel.sumSigs(signatures)
 }
 
-export function generateCombinedPublicAddress(signerOne: any, signerTwo: any) {
+export function generateCombinedPublicAddress(signerOne: any, signerTwo: any): string {
   // get the public key
   const combinedPublicKey = Schnorrkel.getCombinedPublicKey([signerOne.getPubKey(), signerTwo.getPubKey()])
   const px = ethers.utils.hexlify(combinedPublicKey.buffer.subarray(1, 33))
   const combinedAddress = "0x" + px.slice(px.length - 40, px.length)
 
-  return { combinedAddress }
+  return combinedAddress
 }
 
 export function generateCombinedPubAddress(signers: SchnorrSigner[]): string {
@@ -41,7 +41,7 @@ export function pKeyString2Key(pK: string): Key {
   return new Key(Buffer.from(ethers.utils.arrayify(pK)))
 }
 
-export async function generateSingleSigDataAndHash(signer: SchnorrSigner, msg: string) {
+export async function generateSingleSigDataAndHash(signer: SchnorrSigner, msg: string): Promise<{ sigData: string; msgHash: string }> {
   // generate signature for a signer
   const signatureOutput: SignatureOutput = signer.signMessage(msg)
 
@@ -59,7 +59,7 @@ export async function generateSingleSigDataAndHash(signer: SchnorrSigner, msg: s
   return { sigData, msgHash }
 }
 
-export async function generateCombinedSigDataAndHash(signers: SchnorrSigner[], msg: string) {
+export async function generateCombinedSigDataAndHash(signers: SchnorrSigner[], msg: string): Promise<{ sigData: string; msgHash: string }> {
   const publicKeys: Key[] = signers.map((signer) => signer.getPubKey())
   const publicNonces: PublicNonces[] = signers.map((signer) => signer.getPubNonces())
   const combinedPublicKey = Schnorrkel.getCombinedPublicKey(publicKeys)
@@ -84,7 +84,7 @@ export async function generateCombinedSigDataAndHash(signers: SchnorrSigner[], m
   return { sigData, msgHash }
 }
 
-export function getAllCombinedPubAddressXofY(signers: SchnorrSigner[], x: number) {
+export function getAllCombinedPubAddressXofY(signers: SchnorrSigner[], x: number): string[] {
   const allSignersCombos: SchnorrSigner[][] = getAllCombos(signers, x)
   const allCombinedAddresses = allSignersCombos.map((signersCombo) =>
     signersCombo.length > 1 ? generateCombinedPubAddress(signersCombo) : _generatePk(signersCombo[0].getPubKey().buffer)
