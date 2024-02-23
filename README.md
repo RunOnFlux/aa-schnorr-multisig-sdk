@@ -31,16 +31,61 @@ npm run test
 
 ## Important notice
 
-***Before signing any multi-sig transaction signers have to exchange their `publicKey` and `publicNonces`. Nonces are one-time generated random numbers used to validate the signature. It's absolutely crucial to delete the nonces once a signature has been crafted with them. Nonce reuse will lead to private key leakage!***
+***Before signing any multi-sig transaction signers have to exchange their `publicKey` and `publicNonces`. Nonces are one-time generated random numbers used to create and validate the signature. It's absolutely crucial to delete the nonces once a signature has been crafted with them. Nonce reuse will lead to private key leakage!***
 
 ## Example usage
-1. Create Schnorr Signer(s) out of private key. **Remember! Never share your private key!**
+### 1. Create Schnorr Signers out of private keys. 
+**Warning! Never disclose your private key!**
 ```
-const signer1 = createSchnorrSigner(hexToBytes(PRIVATE_KEY))
-const signer2 = createSchnorrSigner(hexToBytes(PRIVATE_KEY))
+const signer1 = createSchnorrSigner(hexToBytes(<PRIVATE_KEY_1>))
+const signer2 = createSchnorrSigner(hexToBytes(<PRIVATE_KEY_2>))
 ```
 
-2. Create User Operation CallData. In this example `UserOperationCallData` is encoded with ERC20's `transfer` function.
+### 2. Create Account Signer and MultiSig Account Signer 
+- Create Provider. It can be e.g. AlchemyProvider.
+```
+const alchemy = new Alchemy({
+  apiKey: <ALCHEMY_API_KEY>,
+  network: <network>,
+})
+const provider = await alchemy.config.getProvider()
+```
+- Connect the Provider to the MultiSig Account Abstraction
+```
+const accountSigner = accountProvider.connectToAccount((rpcClient) => {
+  const smartAccount = new MultiSigAccountAbstraction({
+    entryPointAddress: <ENTRYPOINT_ADDRESS>,
+    chain: <CHAIN>,
+    accountAddress: <SMART_ACCOUNT_ADDRESS>,
+    owner: <ACCPUNT_OWNER>,
+    factoryAddress: <MUSIG_ACCOUNT_FACTORY_ADDRESS>,
+    rpcClient,
+    combinedPubKeys: combinedPubKeys[],
+    salt: utils.formatBytes32String(<SALT_STRING>),
+  })
+
+  smartAccount.getDeploymentState().then((result: unknown) => {
+    console.log("===> [useAccountSigner] deployment state", result)
+  })
+  smartAccount.isAccountDeployed().then((deployed: unknown) => {
+    console.log("===> [useAccountSigner] deployed", deployed)
+  })
+
+  return smartAccount
+})
+```
+Tip! `combinedPubKeys` can be generated with `getAllCombinedPubKeysXofY()` function from schnorr-helpers. **Signers have to be the same as used for signing transactions.**
+
+```
+combinedPubKeys: Key[] = getAllCombinedPubKeysXofY([signer1, signer2])
+```
+- Finally create MultiSig Account Signer out of Account Signer
+```
+const multiSigAccountSigner = createMultiSigAccountSigner(accountSigner)
+```
+
+### 3. Create User Operation Call Data. 
+In this example `UserOperationCallData` is encoded with ERC20's `transfer` function.
 ```
 const uoCallData: UserOperationCallData = encodeFunctionData({
         abi: ERC20_abi,
@@ -49,7 +94,8 @@ const uoCallData: UserOperationCallData = encodeFunctionData({
       })
 ```
 
-3. Build User Operation. Use `MultiSigAccountSigner`'s method with gas estimator `buildUserOpWithGasEstimator()`.
+### 4. Build User Operation. 
+Use `MultiSigAccountSigner`'s method with gas estimator `buildUserOpWithGasEstimator()`.
 ```
 const { opHash, request } = await multiSigAccountSigner.buildUserOpWithGasEstimator(
   {
@@ -62,17 +108,26 @@ const { opHash, request } = await multiSigAccountSigner.buildUserOpWithGasEstima
 )
 ```
 
-4. Initialize Multi-Sig Schnorr Transaction.
+### 5. Initialize Multi-Sig Schnorr Transaction.
+Use signers, opHash and request generated above.
+
+Every instance of `SchnorrMultiSigTx` is created once for single transaction and uses **one-time nonces**, so transaction can't be re-signed or reused! 
 ```
 const msTx = new SchnorrMultiSigTx([signer1, signer2], opHash, request)
 ```
 
-5. Sign the transaction with every defined signer.
+### 6. Sign the transaction with every defined signer.
 ```
 msTx.signMultiSigHash(signer)
 ```
 
-6. Send the transaction with `MultiSigAccountSigner`'s method `sendMultiSigTransaction()`.
+### 7. Send the transaction.
+To do so use `MultiSigAccountSigner`'s method `sendMultiSigTransaction()`.
+
+In this step signatures signed before by every signer are collected and combined within `SchnorrMultiSigTx` instance. This "summed-signature" is then sent and validate on-chain. If it's ok - transaction can be finished.
 ```
 const txHash = await multiSigAccountSigner.sendMultiSigTransaction(msTx)
 ```
+
+## Associated repos
+* [MultiSig Smart Account - ERC-4337 Smart Contracts](https://github.com/RunOnFlux/account-abstraction.git)
