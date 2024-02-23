@@ -227,7 +227,6 @@ export const _generatePublicNonces = (
   const hash = _hashPrivateKey(privateKey)
   const nonce = _generateNonce()
 
-  console.log("[pn] _gen pn", nonce.kPublic, { nonce })
   return {
     hash,
     privateNonceData: {
