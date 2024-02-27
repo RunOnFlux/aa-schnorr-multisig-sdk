@@ -1,11 +1,34 @@
 {
   "name": "aa-schnorr-multisig-sdk",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Account Abstraction Multi Schnorr Signature SDK",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --runInBand",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json"
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@alchemy/aa-core": "^2.3.1",
+    "@alchemy/aa-ethers": "^2.3.1"
+  },
+  "devDependencies": {
+    "@types/bigi": "^1.4.5",
+    "@types/ecurve": "^1.0.0",
+    "@types/elliptic": "^6.4.14",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.19",
+    "@types/secp256k1": "^4.0.6",
+    "bigi": "^1.4.2",
+    "ecurve": "^1.0.6",
+    "eslint": "^8.56.0",
+    "ethers": "^5.7.2",
+    "secp256k1": "^5.0.0",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "viem": "^1.21.4"
+  }
 }
