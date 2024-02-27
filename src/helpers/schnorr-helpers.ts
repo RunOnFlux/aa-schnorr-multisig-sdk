@@ -104,7 +104,11 @@ export function getAllCombinedPubKeysXofY(signers: SchnorrSigner[], x: number): 
   return allCombinedPubKeys
 }
 
-export function getAllCombos(arr: any[], x?: number): any[] {
+export const hashMsgKeccak256 = (message: string): string => {
+  return ethers.utils.solidityKeccak256(["string"], [message])
+}
+
+export function getAllCombos(arr: any[], x: number = 1): any[] {
   /**
    * create array of possible combinations, optionally limited by given X (out of Y)
    * example X of Y array defined as [A, B, C]
@@ -112,11 +116,11 @@ export function getAllCombos(arr: any[], x?: number): any[] {
    * 2 of 3: [AB, AC, BC, ABC]
    * 1 of 3: [A, B, C, AB, AC, BC, ABC]
    */
-  if (arr[0] === undefined) return [arr]
-  const allCombos = getAllCombos(arr.slice(1)).flatMap((el) => [el.concat(arr[0]), el])
-  return x ? allCombos.filter((combo) => combo.length >= x) : allCombos
+  const allCombos = _getCombos(arr)
+  return allCombos.filter((combo) => combo.length >= x)
 }
 
-export const hashMsgKeccak256 = (message: string): string => {
-  return ethers.utils.solidityKeccak256(["string"], [message])
+function _getCombos(arr: any[]): any[] {
+  if (arr[0] === undefined) return [arr]
+  return _getCombos(arr.slice(1)).flatMap((el) => [el.concat(arr[0]), el])
 }
